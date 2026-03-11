@@ -107,6 +107,22 @@ DB_CONNECTION=sqlite
 API_BASE_URL=https://rickandmortyapi.com/api
 ```
 
+## Optional: Bash Aliases
+
+To make navigation easier, you can add aliases to your `~/.bashrc`:
+
+```bash
+alias raclaravel='cd ~/projects/rickandmorty-laravel'
+alias raclaravel-up='cd ~/projects/rickandmorty-laravel && docker compose up -d'
+alias raclaravel-down='cd ~/projects/rickandmorty-laravel && docker compose down'
+```
+
+Then apply the changes:
+
+```bash
+source ~/.bashrc
+```
+
 ## Notes
 
 - All Rick and Morty data is fetched **live from the public API** — no local persistence for content.
