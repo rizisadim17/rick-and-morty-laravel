@@ -1,13 +1,32 @@
-# Rick and Morty Explorer — Laravel
+# Rick and Morty Explorer — Laravel API + Next.js
 
-A web application built with **Laravel 12** that lets you browse and search characters, episodes, and locations from the Rick and Morty universe using the [Rick and Morty API](https://rickandmortyapi.com/api).
+A full-stack web application that lets you browse and search characters, episodes, and locations from the Rick and Morty universe using the [Rick and Morty API](https://rickandmortyapi.com/api).
+
+Built with a **decoupled architecture** — Laravel serves as a REST API backend while Next.js handles the frontend with server-side rendering.
 
 ## Tech Stack
 
-- **Backend:** PHP 8.2+, Laravel 12
-- **Frontend:** Blade templates, Tailwind CSS 3, Vite, Axios
-- **Database:** SQLite (for sessions, cache, and jobs)
-- **Infrastructure:** Docker (via Laravel Sail)
+### Backend
+- **PHP 8.2+, Laravel 12** — REST API server
+- **SQLite** — sessions, cache, and job queues
+- **Docker** — Nginx + PHP-FPM containerized setup
+
+### Frontend
+- **Next.js 16** (App Router) — frontend framework
+- **React 19** — UI components
+- **TypeScript 5** — type-safe development
+- **Tailwind CSS 4** — utility-first styling
+
+## Architecture
+
+```
+Browser → Next.js (localhost:3000) → Laravel API (localhost:8000) → Rick and Morty API
+          (UI + Routing)              (REST JSON)                    (External)
+```
+
+- **Next.js** handles all routing, pages, and UI rendering
+- **Laravel** exposes JSON API endpoints consumed by Next.js
+- **No Blade templates** are used in production — Next.js is the sole frontend
 
 ## Features
 
@@ -18,22 +37,33 @@ A web application built with **Laravel 12** that lets you browse and search char
 - Search characters by **dimension** or **location**
 - View **location details** with paginated resident characters
 - Pagination support across all list views (20 items per page)
-- API error handling with a dedicated error view
+- API error handling with dedicated error views
 
 ## Routes
+
+### Laravel API Routes (`/api`)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/characters` | List all characters |
+| GET | `/api/characters/{id}` | Character detail |
+| GET | `/api/episodes` | List all episodes |
+| GET | `/api/episodes/{id}` | Episode detail |
+| GET | `/api/locations/{id}` | Location detail |
+| GET | `/api/search/characters/dimension` | Search by dimension |
+| GET | `/api/search/characters/location` | Search by location |
+
+### Next.js Frontend Routes
 
 | Path | Description |
 |------|-------------|
 | `/` | Redirects to character list |
-| `/character` | List all characters |
-| `/character/{id}` | Character detail page |
-| `/episode` | List all episodes |
-| `/episode/{id}` | Episode detail page |
-| `/location/{id}` | Location detail page |
-| `/search/characters/dimension` | Search characters by dimension |
-| `/search/characters/location` | Search characters by location |
-| `/characters/dimension/{dimension}` | Characters filtered by dimension |
-| `/characters/location/{location}` | Characters filtered by location |
+| `/characters` | List all characters |
+| `/characters/{id}` | Character detail page |
+| `/episodes` | List all episodes |
+| `/episodes/{id}` | Episode detail page |
+| `/locations/{id}` | Location detail page |
+| `/search` | Search characters by dimension or location |
 
 ## Getting Started
 
@@ -41,62 +71,75 @@ A web application built with **Laravel 12** that lets you browse and search char
 
 - Docker & Docker Compose
 - Node.js 18+
-- Composer
 
-### Run with Docker
+### 1. Start the Laravel API (Docker)
 
 ```bash
-docker compose -f docker-compose.yml up -d
+docker compose up -d
 ```
 
-### Install dependencies
+Verify containers are running:
 
 ```bash
-composer install
+docker ps
+```
+
+Laravel API will be available at: `http://localhost:8000`
+
+### 2. Start the Next.js Frontend
+
+```bash
+cd frontend
 npm install
-```
-
-### Build frontend assets
-
-```bash
 npm run dev
 ```
 
-### Run migrations
+Next.js will be available at: `http://localhost:3000`
 
-```bash
-php artisan migrate
-```
+### 3. Access the App
 
-### Access the app
+Open your browser and go to:
 
 ```
-http://localhost:{port}/search/characters/dimension
+http://localhost:3000
 ```
 
 ## Project Structure
 
 ```
-app/
-├── Http/
-│   └── Controllers/   # Route handlers (Character, Episode, Location)
-├── Services/          # API business logic (Character, Episode, Location, Pagination)
-├── Models/            # Eloquent models (User — standard Laravel auth)
-resources/
-├── views/
-│   ├── characters/    # Character list and detail views
-│   ├── episodes/      # Episode list and detail views
-│   ├── locations/     # Location detail and search views
-│   ├── components/    # Reusable Blade components (nav, pagination, search, character card)
-│   ├── errors/        # API error views
-│   └── layouts/       # Base layout
-├── js/                # JavaScript modules (toggle, menu, loader)
-├── css/               # Tailwind CSS entry
-routes/
-└── web.php            # All application routes
+rickandmorty-laravel/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── Api/           # API controllers (Character, Episode, Location)
+│   └── Services/              # Business logic (Character, Episode, Location, Pagination)
+├── routes/
+│   ├── api.php                # Laravel API routes
+│   └── web.php                # (legacy Blade routes)
+├── docker/                    # Nginx config
+├── docker-compose.yml
+├── Dockerfile
+└── frontend/                  # Next.js application
+    ├── app/
+    │   ├── layout.tsx         # Root layout
+    │   ├── page.tsx           # Home (redirects)
+    │   ├── characters/        # Character pages
+    │   ├── episodes/          # Episode pages
+    │   ├── locations/         # Location pages
+    │   └── search/            # Search pages
+    ├── components/
+    │   ├── CharacterCard.tsx
+    │   ├── Navigation.tsx
+    │   ├── Pagination.tsx
+    │   └── SearchForm.tsx
+    ├── lib/                   # API utility functions
+    ├── types/                 # TypeScript type definitions
+    └── package.json
 ```
 
 ## Environment Variables
+
+### Laravel (`.env`)
 
 Copy `.env.example` to `.env` and adjust as needed:
 
@@ -107,6 +150,12 @@ DB_CONNECTION=sqlite
 API_BASE_URL=https://rickandmortyapi.com/api
 ```
 
+### Next.js (`frontend/.env.local`)
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
 ## Optional: Bash Aliases
 
 To make navigation easier, you can add aliases to your `~/.bashrc`:
@@ -115,6 +164,7 @@ To make navigation easier, you can add aliases to your `~/.bashrc`:
 alias raclaravel='cd ~/projects/rickandmorty-laravel'
 alias raclaravel-up='cd ~/projects/rickandmorty-laravel && docker compose up -d'
 alias raclaravel-down='cd ~/projects/rickandmorty-laravel && docker compose down'
+alias raclaravel-fe='cd ~/projects/rickandmorty-laravel/frontend && npm run dev'
 ```
 
 Then apply the changes:
@@ -126,5 +176,6 @@ source ~/.bashrc
 ## Notes
 
 - All Rick and Morty data is fetched **live from the public API** — no local persistence for content.
-- The SQLite database is only used for Laravel's built-in users, sessions, cache, and job queues.
+- The SQLite database is only used for Laravel's built-in sessions, cache, and job queues.
 - The API service layer includes retry logic (3 attempts, 100ms delay) and request timeout (10s).
+- The legacy Blade templates in `resources/views/` are kept for reference but are no longer the primary frontend.
