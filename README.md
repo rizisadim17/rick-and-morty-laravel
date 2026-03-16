@@ -4,6 +4,14 @@ A full-stack web application that lets you browse and search characters, episode
 
 Built with a **decoupled architecture** — Laravel serves as a REST API backend while Next.js handles the frontend with server-side rendering.
 
+## Screenshots
+<img width="1920" height="1994" alt="ram-characters" src="https://github.com/user-attachments/assets/958327ca-3088-4048-a932-31ed3cbcd4c0" />
+<img width="1920" height="2612" alt="ram-per-character" src="https://github.com/user-attachments/assets/83793581-bce2-456e-9ff7-03f699b7f5b6" />
+<img width="1920" height="2285" alt="ram-per-location" src="https://github.com/user-attachments/assets/e5264246-fbae-4f57-9d33-49888f37b804" />
+<img width="1920" height="2197" alt="ram-dimension" src="https://github.com/user-attachments/assets/afe30a30-9366-47be-a391-3cdd61567acf" />
+<img width="1920" height="2524" alt="ram-per-episode" src="https://github.com/user-attachments/assets/74e45583-1ede-441c-a48c-b62e4b5843e6" />
+
+
 ## Tech Stack
 
 ### Backend
